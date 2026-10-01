@@ -52,6 +52,24 @@ footer{padding:35px 0;color:var(--muted);border-top:1px solid var(--line)}
 <div class="card"><h3>Prototype safety</h3><p>Do not electrify the assembly or use sharpened, conductive, projectile-like or rigid penetrating tips. Keep clear of aircraft and rotating machinery. Prototype at walking speed in a controlled area and ensure the wearer can remove it quickly.</p></div>
 </div></div></section>
 
+
+<section id="design-instructions"><div class="wrap">
+<h2>Design instructions from the concept</h2>
+<p class="sub">A practical interpretation of the illustrated design using ordinary, non-sharp prototype materials. Dimensions should be adjusted to the actual rucksack and wearer rather than treated as fixed engineering tolerances.</p>
+<div class="grid">
+  <div class="card"><h3>1. Over-ruck harness</h3><p>Start with two vertical nylon webbing runs down the rear face of the ruck and connect them with upper, middle and lower cross-straps. Route the straps around the pack—not through the wearer’s shoulder harness—and use side-release buckles so the entire prototype can be removed.</p></div>
+  <div class="card"><h3>2. Lightweight perimeter frame</h3><p>Form a flexible oval/rounded support frame slightly larger than the rear face of the pack using flexible plastic tubing or similar lightweight material. Secure it to the webbing at several points so the load is spread over the ruck instead of hanging from one attachment.</p></div>
+  <div class="card"><h3>3. Mesh carrier</h3><p>Cut plastic utility/garden mesh to follow the support frame. Attach it loosely with reusable plastic ties or clips, leaving enough movement for the frame to flex. Keep the center area accessible for ruck zippers and pockets where practical.</p></div>
+  <div class="card"><h3>4. Radial pole layout</h3><p>Arrange flexible green/black rods around the frame in staggered rows, pointing outward in different directions to reproduce the dense 360° visual effect shown in the concept. Use blunt capped ends and flexible attachment loops. Do not use sharpened or conductive tips.</p></div>
+  <div class="card"><h3>5. Modular pole sections</h3><p>For a packable prototype, use short removable sections joined with ordinary non-sharp plastic couplers. Keep individual rods light and flexible. Alternate green and black sections to match the concept styling.</p></div>
+  <div class="card"><h3>6. Stabilization</h3><p>Add secondary mesh loops or flexible ties partway along groups of rods where needed to reduce excessive movement. The rods should remain individually separated rather than being rigidly joined at their outer ends.</p></div>
+  <div class="card"><h3>7. Weight distribution</h3><p>Use multiple upper, side and lower attachment points. Add foam where the accessory contacts the pack. Keep heavier connectors close to the ruck and lighter components farther outward to reduce leverage on the wearer.</p></div>
+  <div class="card"><h3>8. Final fit check</h3><p>With the ruck stationary, verify all ends are blunt, straps cannot interfere with shoulder/waist-belt operation, the wearer can remove the ruck normally, and the assembly does not block vision or snag nearby people. Test only as a non-electrified display/prototype in a controlled area.</p></div>
+  <div class="card"><h3>Concept parts list</h3><ul class="parts"><li>Nylon webbing and side-release buckles</li><li>Flexible plastic tubing for the perimeter frame</li><li>Plastic utility/garden mesh</li><li>Flexible fiberglass marker rods or plastic rods</li><li>Blunt rubber/plastic end caps</li><li>Plastic couplers for removable sections</li><li>Reusable cable ties / plastic clips</li><li>Closed-cell foam padding</li></ul></div>
+</div>
+<div class="notice" style="margin-top:22px"><b>Design boundary:</b> This is a non-electrified, blunt-ended prototype/display design. It does not include sharpened tips, high voltage, entanglement mechanisms, or instructions intended to damage drones, aircraft, people, or property.</div>
+</div></section>
+
 <section id="model"><div class="wrap"><h2>Interactive concept view</h2><p class="sub">Simplified browser-rendered representation of the final assembly. Dragging is not required; the concept gently changes viewing angle automatically.</p>
 <div class="viewer"><div class="model" id="ruck"></div></div></div></section>
 
@@ -85,17 +103,62 @@ footer{padding:35px 0;color:var(--muted);border-top:1px solid var(--line)}
 <footer><div class="wrap">© <span id="year"></span> PORCUPINE RUCK™ concept. “™” is used as a brand claim and does not represent a statement of trademark registration.</div></footer>
 
 <script>
-const ruck=document.getElementById('ruck');
-for(let i=0;i<28;i++){let x=document.createElement('i');x.className='rod';x.style.transform=`rotate(${i*360/28}deg)`;ruck.appendChild(x)}
-document.getElementById('year').textContent=new Date().getFullYear();
-document.getElementById('form').addEventListener('submit',e=>{
- e.preventDefault();
- const [price,qty]=tier.value.split('|'), n=name.value, em=email.value, refv=ref.value;
- receiptBody.innerHTML=`Buyer: <b>${esc(n)}</b><br>Email: ${esc(em)}<br>License requested: up to <b>${qty} units</b><br>Amount declared sent: <b>$${Number(price).toLocaleString()}</b><br>Transaction/reference: <b>${esc(refv)}</b><br>Generated: ${new Date().toLocaleString()}`;
- receipt.classList.add('show');
- mail.href=`mailto:dsimps3@icloud.com?subject=${encodeURIComponent('PORCUPINE RUCK licensing request - '+n)}&body=${encodeURIComponent('Buyer: '+n+'\nEmail: '+em+'\nLicense: up to '+qty+' units\nAmount: $'+price+'\nE-transfer reference: '+refv+'\n\nI accepted the quantity-limited license acknowledgement on the website. Please verify payment and confirm rights in writing.')}`;
- receipt.scrollIntoView({behavior:'smooth'});
+const byId = id => document.getElementById(id);
+const ruck = byId('ruck');
+
+for (let i=0; i<28; i++) {
+  const x = document.createElement('i');
+  x.className = 'rod';
+  x.style.transform = `rotate(${i*360/28}deg)`;
+  ruck.appendChild(x);
+}
+
+byId('year').textContent = new Date().getFullYear();
+
+const form = byId('form');
+const receipt = byId('receipt');
+const receiptBody = byId('receiptBody');
+const mail = byId('mail');
+
+form.addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  if (!form.reportValidity()) return;
+
+  const nameValue = byId('name').value.trim();
+  const emailValue = byId('email').value.trim();
+  const refValue = byId('ref').value.trim();
+  const tierValue = byId('tier').value.split('|');
+  const price = tierValue[0];
+  const qty = tierValue[1];
+
+  receiptBody.innerHTML =
+    `Buyer: <b>${esc(nameValue)}</b><br>` +
+    `Email: ${esc(emailValue)}<br>` +
+    `License requested: up to <b>${esc(qty)} units</b><br>` +
+    `Amount declared sent: <b>$${Number(price).toLocaleString()}</b><br>` +
+    `Transaction/reference: <b>${esc(refValue)}</b><br>` +
+    `Generated: ${new Date().toLocaleString()}`;
+
+  mail.href =
+    `mailto:dsimps3@icloud.com?subject=${encodeURIComponent('PORCUPINE RUCK licensing request - ' + nameValue)}` +
+    `&body=${encodeURIComponent(
+      'Buyer: ' + nameValue +
+      '\nEmail: ' + emailValue +
+      '\nLicense: up to ' + qty + ' units' +
+      '\nAmount: $' + price +
+      '\nE-transfer reference: ' + refValue +
+      '\n\nI accepted the quantity-limited license acknowledgement on the website. Please verify payment and confirm rights in writing.'
+    )}`;
+
+  receipt.classList.add('show');
+  receipt.scrollIntoView({behavior:'smooth', block:'start'});
 });
-function esc(v){return v.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+
+function esc(v) {
+  return String(v).replace(/[&<>"']/g, m => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  })[m]);
+}
 </script>
 </body></html>
